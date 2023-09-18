@@ -89,4 +89,4 @@ if [ "$exim_rebuild_restart_not_required" == 1 ];
 #		echo "$exim_restart"
 #	else
 #		echo "Exim rebuild failed. Please check server log"
-fi
+#fi
