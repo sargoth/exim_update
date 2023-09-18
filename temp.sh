@@ -48,17 +48,22 @@ fi
 
 #Check if no_forward_outbound_spam_over_int has any value set in /etc/exim.conf.localopts and change it to 5
 no_forward_outbound_spam_over_int_check=$(grep 'no_forward_outbound_spam_over_int' /etc/exim.conf.localopts)
-if [ "$no_forward_outbound_spam_over_int_check" == "no_forward_outbound_spam_over_int" ];
-	then
-		echo "no_forward_outbound_spam_over_int does not have any value. Changing it to 5"
-		sed -i 's/no_forward_outbound_spam_over_int/no_forward_outbound_spam_over_int=5/' /etc/exim.conf.localopts
-		echo "Value changed to 5"
-	else
-		echo "Value of no_forward_outbound_spam_over_int is already 5: grep result: $no_forward_outbound_spam_over_int_check. Nothing to do"
-			
+if [ "$no_forward_outbound_spam_over_int_check" == "no_forward_outbound_spam_over_int=5" ];
+        then
+                echo "Value of no_forward_outbound_spam_over_int is already 5: grep result: $no_forward_outbound_spam_over_int_check. Nothing to do"
+
+        elif [ "$no_forward_outbound_spam_over_int_check" == "no_forward_outbound_spam_over_int" ];
+        then
+                echo "no_forward_outbound_spam_over_int does not have any value. Changing it to 5"
+                sed -i 's/no_forward_outbound_spam_over_int/no_forward_outbound_spam_over_int=5/' /etc/exim.conf.localopts
+                echo "Value changed to 5"
+        else
+                echo "no_forward_outbound_spam_over_int missing from exim.conf file. Adding it."
+                echo 'no_forward_outbound_spam_over_int=5' >> /etc/exim.conf.localopts
+                echo "Value set to 5."  
 fi
 
-#Rebuild Exim, check if conf is valida and restart service.
+#Rebuild Exim, check if conf is valid and restart service.
 echo "Rebuilding and Restarting Exim"
 exim_restart=$(/scripts/restartsrv_exim | grep 'exim restarted successfully.')
 exim_rebuild=$(/scripts/buildeximconf | grep 'Configuration file passes test!  New configuration file was installed.')
