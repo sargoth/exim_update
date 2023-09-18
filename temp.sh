@@ -1,4 +1,8 @@
 #!/bin/bash
+
+server=$(hostname)
+echo "Server: $server"
+
 while getopts "r" opt; do
 	case $opt in
 		r)
@@ -17,32 +21,6 @@ while getopts "r" opt; do
 			;;
 	esac
 done
-
-#Check if argument was provided
-#if [ $# -eq 0 ];
-#	then
-#		echo "No command provided."
-#		echo "$0 revert "
-#		exit 1
-#	fi
-
-#provided_argument="$1"
-
-#Define the functionality of the command
-#case "provided_argument" in
-#	"revert")
-#		execute_revert= echo "Reverting changes made by this script."
-#				rm -f /etc/global_spamassassin_enable
-#				sed -i 's/globalspamassassin=1/globalspamassassin=0/' /etc/exim.conf.localopts
-#				sed -i 's/no_forward_outbound_spam_over_int=5/no_forward_outbound_spam_over_int/' /etc/exim.conf.localopts
-#				echo "Changes reverted. Rebuilding and restarting Exim."
-#				/scripts/buildeximconf
-#				/scripts/restartsrv_exim        
-#	;;
-#esac
-
-#Execute revert code
-eval "$execute_revert"
 
 #Check if global_spamassassin_enable exist and if not create it
 if [ -f /etc/global_spamassassin_enable ];
