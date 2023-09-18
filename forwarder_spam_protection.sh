@@ -22,7 +22,7 @@ while getopts "r" opt; do
 	esac
 done
 
-#Check if global_spamassassin_enable exist and if not create it
+#Check if global_spamassassin_enable exists and if not create it
 if [ -f /etc/global_spamassassin_enable ];
 	then
 		echo "File: /etc/global_spamassassin_enable already exists. Nothing to do"	
@@ -67,10 +67,26 @@ fi
 echo "Rebuilding and Restarting Exim"
 exim_restart=$(/scripts/restartsrv_exim | grep 'exim restarted successfully.')
 exim_rebuild=$(/scripts/buildeximconf | grep 'Configuration file passes test!  New configuration file was installed.')
-if [ "$exim_rebuild" == "Configuration file passes test!  New configuration file was installed." ];
+exim_rebuild_restart_not_required=$("$no_forward_outbound_spam_over_int_check" == "no_forward_outbound_spam_over_int=5" && -f /etc/global_spamassassin_enable && "$globalspamassassin_check" == "globalspamassassin_check=1")
+
+if [ "$exim_rebuild_restart_not_required" == 1 ];
 	then
-		echo "Exim rebuilt successfully. Proceeding with restart"
-		echo "$exim_restart"
-	else
+ 		echo "Rebuild and restart not required."
+   	elif [ "$exim_rebuild" == 1 ];
+    	then
+     		$exim_restart
+       	else
 		echo "Exim rebuild failed. Please check server log"
+  fi
+
+#if [[ "$no_forward_outbound_spam_over_int_check" == "no_forward_outbound_spam_over_int=5" && -f /etc/global_spamassassin_enable && "$globalspamassassin_check" == "globalspamassassin_check=1" ]]
+#	then
+ #		echo ""
+
+#if [ "$exim_rebuild" == "Configuration file passes test!  New configuration file was installed." ];
+#	then
+#		echo "Exim rebuilt successfully. Proceeding with restart"
+#		echo "$exim_restart"
+#	else
+#		echo "Exim rebuild failed. Please check server log"
 fi
